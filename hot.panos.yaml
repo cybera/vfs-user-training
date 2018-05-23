@@ -1,0 +1,77 @@
+heat_template_version: 2016-04-08
+
+parameters:
+    flavor:
+        type: string
+        description: Flavor to use for instance (f1.small, f1.medium, f1.large)
+    image:
+        type: string
+        description: Image ID for production
+    untrust0_subnet_cidr:
+        type: string
+        description: ID of untrust0 Neutron subnet into which the instance gets deployed
+    untrust0_subnet_gateway:
+        type: string
+        description: Gateway address for untrust0 subnet
+    untrust0_port_address:
+        type: string
+        description: IP address of untrust0 firewall port
+    trust0_subnet_cidr:
+        type: string
+        description: ID of trust0 Neutron subnet into which the instance gets deployed
+    trust0_subnet_gateway:
+        type: string
+        description: Gateway address for trust0 subnet
+    trust0_port_address:
+        type: string
+        description: IP address of trust0 firewall port
+
+description: Launch single PaloAlto VM-Series Firewall on trust and untrust networks, with management network via IPv4
+
+resources:
+    untrust0_subnet:
+        type: OS::Neutron::Subnet
+        properties:
+            name: untrust0-sub0
+            network: untrust0
+            cidr: { get_param: untrust0_subnet_cidr }
+            enable_dhcp: false
+            gateway_ip: { get_param: untrust0_subnet_gateway }
+    untrust0_port:
+        type: OS::Neutron::Port
+        properties:
+            name: untrust0-port
+            network: untrust0
+            fixed_ips: [{"subnet_id": { get_resource: untrust0_subnet }, "ip_address":{ get_param: untrust0_port_address}}]
+            binding:vnic_type: direct
+    trust0_subnet:
+        type: OS::Neutron::Subnet
+        properties:
+            name: trust0-sub0
+            network: trust0
+            cidr: { get_param: trust0_subnet_cidr }
+            enable_dhcp: false
+            gateway_ip: { get_param: trust0_subnet_gateway }
+    trust0_port:
+        type: OS::Neutron::Port
+        properties:
+            name: trust0-port
+            network: trust0
+            fixed_ips: [{"subnet_id": { get_resource: trust0_subnet }, "ip_address":{ get_param: trust0_port_address}}]
+            binding:vnic_type: direct
+    firewall:
+        type: OS::Nova::Server
+        properties:
+            name: cybera_virtual_firewall
+            image: { get_param: image }
+            flavor: { get_param: flavor }
+            user_data_format: RAW
+            config_drive: true
+            personality:
+                /config/init-cfg.txt: "%INITCFG%"
+                /config/bootstrap.xml: "%BOOTSTRAP%"
+                /license/authcodes: "%AUTHCODES%"
+            networks:
+                - network: default
+                - port: { get_resource: untrust0_port }
+                - port: { get_resource: trust0_port }

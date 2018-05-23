@@ -1,0 +1,2 @@
+type=dhcp-client
+dns-primary=8.8.8.8
