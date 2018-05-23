@@ -10,6 +10,7 @@ These files are required for an initial launch of CyberaVFS. Each file should be
 - authcodes (empty file)
 
 ## PANOS XML simple scripts
-Using curl to interact with the Palo-Alto OS XML API
+Using curl to interact with the Palo-Alto OS XML API. Will need to make sure that xmllint is installed:
+`apt install libxml2-utils`
 - get-api-key.sh
 - get-running-config.sh
