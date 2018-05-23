@@ -1,7 +1,7 @@
 # Cybera VFS User Training
 
 ## Bootstrap files
-These files are required for an initial launch of CyberaVFS. Each file should be modified (subnet info, etc) and uploaded to a projects Swift container named 'CyberaVFS', used in the Rapid Access Cloud dashboard Orchestration, or via the command-line client.
+These files are required for an initial launch of CyberaVFS. Each file should be modified (subnet info, etc) and uploaded to a projects Swift container named 'CyberaVFS' if using the VFS Control Panel or via the command-line client.
 
 - bootstrap.xml
 - hot.panos.yaml
